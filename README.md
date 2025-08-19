@@ -66,7 +66,8 @@
       <td>POST</td>
       <td><code>/auth/login</code></td>
       <td>
-        <code>{"email": "tes1t@yandex.ru", "password": "1234"}</code>
+        <code>{"email": "tes1t@yandex.ru",
+        "password": "1234"}</code>
       </td>
       <td>Получение JWT-токена</td>
     </tr>
