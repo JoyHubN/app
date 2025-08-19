@@ -51,11 +51,13 @@
       <td><code>/auth/registration</code></td>
       <td>
         <pre>
-            <code>{"fio": "fio",
+            <code>{
+"fio": "fio",
 "email": "test@yandex.ru", 
 "birthday": "2025.08.15",
 "password": "password", 
-"role" : "user"/"admin"}</code>
+"role" : "user"/"admin"
+}</code>
         </pre>
       </td>
       <td>Регистрация пользователя</td>
