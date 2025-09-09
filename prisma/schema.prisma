@@ -5,7 +5,6 @@ generator client {
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
-  schemas  = ["public"]
 }
 
 model profiles {
@@ -16,7 +15,6 @@ model profiles {
   users    users?  @relation(fields: [user_id], references: [user_id], onDelete: Cascade, onUpdate: NoAction)
 
   @@index([user_id], map: "idx_records_user_id")
-  @@schema("public")
 }
 
 model users {
@@ -26,6 +24,4 @@ model users {
   status   Boolean?   @default(true)
   role     String?    @db.VarChar(5)
   profiles profiles[]
-
-  @@schema("public")
 }
