@@ -9,7 +9,7 @@ export default (roles) => {
             const token = req.headers.authorization.split(' ')[1];
 
             if (!token){
-                return res.status(403).json({message:'Пользователь не авторизован'})
+                return res.status(403).json({message : 'Пользователь не авторизован'})
             }
             else{
                 const {roles: userRoles} = jwt.verify(token, process.env.JWT_KEY, {algorithms: ['HS256']});
@@ -21,7 +21,10 @@ export default (roles) => {
         }
         catch (e){
             console.log(e);
-            return res.status(403).json({message:'Пользователь не авторизован'})
+            if(e.name === 'TokenExpiredError'){
+                return res.status(401).json({message : 'Токен истек'})
+            }
+            return res.status(403).json({message : 'Пользователь не авторизован'})
         }
     }
 }
