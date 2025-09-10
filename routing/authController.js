@@ -1,5 +1,5 @@
-import { registrationUser, geUserForName, getUsers, getUser, blockUser } from "../models/User.js";
-import errors from '../errors.js'
+import { registrationUser, geUserForName, getUsers, getUser, blockUser } from "../../models/User.js";
+import errors from '../../errors.js'
 import bcript from 'bcrypt'
 import jwt from 'jsonwebtoken'
 
