@@ -73,7 +73,7 @@
     </tr>
     <tr>
       <td>POST</td>
-      <td><code>/auth/ban</code></td>
+      <td><code>/user/ban</code></td>
       <td>
         Для админа: передать в тело <code>{"user_id": user_id}</code> 
       </td>
@@ -81,7 +81,7 @@
     </tr>
     <tr>
       <td>POST</td>
-      <td><code>/auth/unban</code></td>
+      <td><code>/user/unban</code></td>
       <td>
         Для админа: передать в тело <code>{"user_id": user_id}</code> 
       </td>
@@ -89,19 +89,18 @@
     </tr>
     <tr>
       <td>GET</td>
-      <td><code>/auth/users</code></td>
+      <td><code>/users</code></td>
       <td>
         <code>Authorization: Bearer JWT-токен</code><br><br>
-        Для админа: передать в тело <code>{"user_id": user_id}</code> 
       </td>
       <td>Список пользователей</td>
     </tr>
     <tr>
       <td>GET</td>
-      <td><code>/auth/user</code></td>
+      <td><code>/user</code></td>
       <td>
         <code>Authorization: Bearer JWT-токен</code><br><br>
-        Для админа: передать в тело <code>{"user_id": user_id}</code> 
+        Для админа: параметр id <code>localhost:PORT/user?id=1</code> 
       </td>
       <td>Получить пользователя по id</td>
     </tr>
