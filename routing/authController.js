@@ -1,7 +1,7 @@
-import { registrationUser, geUserForName, getUsers, getUser, blockUser } from "../../models/User.js";
-import errors from '../../errors.js'
-import bcript from 'bcrypt'
-import jwt from 'jsonwebtoken'
+import { registrationUser, geUserForName, getUsers, getUser, blockUser } from "../models/User.js";
+import errors from '../errors.js';
+import bcript from 'bcrypt';
+import jwt from 'jsonwebtoken';
 
 
 const generateAccessToken = (id, roles, username) => {
@@ -20,14 +20,14 @@ class authController{
             if (fio, birthday, email, password, role){
                 const user = await registrationUser({fio, birthday, role, profiles: {email, password}})
                 if (typeof user.code == "undefined") {
-                    return res.status(200).json({message: true});
+                    return res.status(200).json({ message: true });
                 }
                 else{
-                    return res.status(400).json({error: errors[user.code]})
+                    return res.status(400).json({ error: errors[user.code]} )
                 }
             }
             else{
-                res.status(400).json({error:'Нет нужных данных',})
+                res.status(400).json({ error: 'Нет нужных данных' })
             }
         }
         catch (e) {
@@ -40,12 +40,12 @@ class authController{
             const {email, password} = req.body;
             const user = await geUserForName(email);
             if (user == false | user == null){
-                return res.status(404).json({error:'Нет такого пользователя'})
+                return res.status(404).json({ error: 'Нет такого пользователя' })
             }
             else{
                 const validPassword = bcript.compare(password, user.profiles[0].password);
                 if (!validPassword){
-                    return res.status(400).json({error:'Неверный пароль'})
+                    return res.status(400).json({ error: 'Неверный пароль' })
                 }
                 else{
                     const token = generateAccessToken(user.user_id, user.role, user.fio);
@@ -61,39 +61,51 @@ class authController{
 
     async getUser(req, res){
         try {
+            if (req.body){
+                return res.status(400).json({ message: 'Тело запроса не должно быть отправлено' })
+            }
             const { id, roles } = jwt.decode(req.headers.authorization.split(' ')[1], process.env.JWT_KEY);
             if (roles === 'user'){
                 const user = await getUser(id);
                 if (typeof user.code == 'undefined'){
-                    return res.status(200).json({user})
+                    return res.status(200).json({ user })
                 }
                 else{
-                    return res.status(400).json({message : user.code})
+                    return res.status(400).json({ message: user.code })
                 }
             }
             else if (roles === 'admin'){
-                const user = await getUser(req.body.user_id);
-                if (typeof user.code == 'undefined'){
-                    return res.status(200).json({user})
+                console.log(req.query.id)
+                const user = await getUser(req.query.id);
+                if (user){
+                    if (typeof user.code == 'undefined'){
+                        return res.status(200).json({user})
+                    }
+                    else{
+                        return res.status(400).json({ message: user.code })
+                        }
                 }
-                else{
-                    return res.status(400).json({message : user.code})
+                else {
+                    return res.status(404).json({ message: 'Пользователь не найден' })
                 }
             }
         }
         catch (e) {
             console.log(e);
-            return res.json(400)
+            return res.status(400)
         }
     }
     async get_users(req, res){
         try {
+            if (req.body && req.query){
+                return res.status(400).json({ message: 'Тело запроса или параметры не должны быть отправлены' })
+            }
             const user = await getUsers();
             if (typeof user.code == 'undefined'){
-                return res.status(200).json({user})
+                return res.status(200).json({ user })
             }
             else{
-                return res.status(400).json({message : user.code})
+                return res.status(400).json({ message: user.code })
             }
         }
         catch (e) {
@@ -107,10 +119,10 @@ class authController{
             if (roles === 'user'){
                 const user = await blockUser(id, false)
                 if (user){
-                    return res.status(200).json({message:'Вы успешно заблокированы', user})
+                    return res.status(200).json({ message: 'Вы успешно заблокированы', user })
                 }
                 else{
-                    return res.status(400).json({message: user})
+                    return res.status(400).json({ message: user })
                 }
             }
             else if(roles === 'admin'){
@@ -120,10 +132,10 @@ class authController{
 
                 if (user){
                     const whoId = id === user_id ? 'себя' : `${id} ${user.fio}`
-                    return res.status(200).json({message:`Вы успешно заблокировали ${whoId}`, user}) 
+                    return res.status(200).json({ message: `Вы успешно заблокировали ${whoId}`, user }) 
                 }
                 else{
-                    return res.status(400).json({message: user})
+                    return res.status(400).json({ message: user })
                 }
             }
 
@@ -140,10 +152,10 @@ class authController{
             if (roles === 'user'){
                 const user = await blockUser(id, true)
                 if (user){
-                    return res.status(200).json({message:'Вы успешно разблокированы', user})
+                    return res.status(200).json({ message:'Вы успешно разблокированы', user })
                 }
                 else{
-                    return res.status(400).json({message: user})
+                    return res.status(400).json({ message: user })
                 }
             }
             else if(roles === 'admin'){
@@ -152,10 +164,42 @@ class authController{
 
                 if (user){
                     const whoId = id === user_id ? 'себя' : `${id} ${user.fio}`
-                    return res.status(200).json({message:`Вы успешно разблокировали ${whoId}`, user}) 
+                    return res.status(200).json({ message: `Вы успешно разблокировали ${whoId}`, user }) 
                 }
                 else{
-                    return res.status(400).json({message: user})
+                    return res.status(400).json({ message: user })
+                }
+            }
+
+        }
+        catch (e) {
+            console.log(e)
+            return res.json(400)
+        }
+    }   
+
+    async reset_password(req, res){
+        try {
+            const { id, roles } = jwt.decode(req.headers.authorization.split(' ')[1], process.env.JWT_KEY);
+            if (roles === 'user'){
+                const user = await blockUser(id, true)
+                if (user){
+                    return res.status(200).json({ message: 'Вы успешно разблокированы', user })
+                }
+                else{
+                    return res.status(400).json({ message: user })
+                }
+            }
+            else if(roles === 'admin'){
+                const { user_id } = req.body 
+                const user = await blockUser(user_id, false)
+
+                if (user){
+                    const whoId = id === user_id ? 'себя' : `${id} ${user.fio}`
+                    return res.status(200).json({ message: `Вы успешно разблокировали ${whoId}`, user }) 
+                }
+                else{
+                    return res.status(400).json({ message: user })
                 }
             }
 
