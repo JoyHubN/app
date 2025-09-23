@@ -71,7 +71,7 @@ export async function getUsers(){
 
 export async function getUser(user_id){
   const users = await prisma.users.findUnique({ 
-    where: {user_id: user_id},
+    where: {user_id: +user_id},
       include: {
         profiles: {
           select: {
@@ -86,7 +86,7 @@ export async function getUser(user_id){
     return users
   }
   else{
-    return users.code
+    return null
   }
 }
 
