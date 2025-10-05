@@ -9,7 +9,7 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "description": "",
+  "description": "Создать .env по пути ```config/.env```",
   "dependencies": {
     "@joi/date": "^2.1.1",
     "@prisma/client": "^6.14.0",
