@@ -16,7 +16,7 @@ const generateAccessToken = (id, roles, username) => {
 class authController{
     async registration(req, res){
         try {
-            const {fio, birthday, email, password, role} = req.body;
+            const { fio, birthday, email, password, role } = req.validatedBody;
             if (fio, birthday, email, password, role){
                 const user = await registrationUser({fio, birthday, role, profiles: {email, password}})
                 if (typeof user.code == "undefined") {
@@ -27,7 +27,7 @@ class authController{
                 }
             }
             else{
-                res.status(400).json({ error: 'Нет нужных данных' })
+                return res.status(400).json({ error: 'Нет нужных данных' })
             }
         }
         catch (e) {
@@ -75,7 +75,6 @@ class authController{
                 }
             }
             else if (roles === 'admin'){
-                console.log(req.query.id)
                 const user = await getUser(req.query.id);
                 if (user){
                     if (typeof user.code == 'undefined'){
@@ -97,12 +96,13 @@ class authController{
     }
     async get_users(req, res){
         try {
-            if (req.body && req.query){
-                return res.status(400).json({ message: 'Тело запроса или параметры не должны быть отправлены' })
-            }
-            const user = await getUsers();
+
+            
+            const { offset, limit } = req.validatedParams;
+
+            const user = await getUsers(+offset, +limit);
             if (typeof user.code == 'undefined'){
-                return res.status(200).json({ user })
+                return res.status(200).json(user)
             }
             else{
                 return res.status(400).json({ message: user.code })
@@ -117,7 +117,7 @@ class authController{
         try {
             const { id, roles } = jwt.decode(req.headers.authorization.split(' ')[1], process.env.JWT_KEY);
             if (roles === 'user'){
-                const user = await blockUser(id, false)
+                const user = await blockUser(id, false);
                 if (user){
                     return res.status(200).json({ message: 'Вы успешно заблокированы', user })
                 }
@@ -126,12 +126,11 @@ class authController{
                 }
             }
             else if(roles === 'admin'){
-                console.log(req.body);
-                const { user_id } = req.body 
+                const { user_id } = req.body;
                 const user = await blockUser(user_id, false)
 
                 if (user){
-                    const whoId = id === user_id ? 'себя' : `${id} ${user.fio}`
+                    const whoId = id === user_id ? 'себя' : `${id} ${user.fio}`;
                     return res.status(200).json({ message: `Вы успешно заблокировали ${whoId}`, user }) 
                 }
                 else{
@@ -150,7 +149,7 @@ class authController{
         try {
             const { id, roles } = jwt.decode(req.headers.authorization.split(' ')[1], process.env.JWT_KEY);
             if (roles === 'user'){
-                const user = await blockUser(id, true)
+                const user = await blockUser(id, true);
                 if (user){
                     return res.status(200).json({ message:'Вы успешно разблокированы', user })
                 }
@@ -159,11 +158,11 @@ class authController{
                 }
             }
             else if(roles === 'admin'){
-                const { user_id } = req.body 
-                const user = await blockUser(user_id, false)
+                const { user_id } = req.body;
+                const user = await blockUser(user_id, false);
 
                 if (user){
-                    const whoId = id === user_id ? 'себя' : `${id} ${user.fio}`
+                    const whoId = id === user_id ? 'себя' : `${id} ${user.fio}`;
                     return res.status(200).json({ message: `Вы успешно разблокировали ${whoId}`, user }) 
                 }
                 else{
@@ -182,7 +181,7 @@ class authController{
         try {
             const { id, roles } = jwt.decode(req.headers.authorization.split(' ')[1], process.env.JWT_KEY);
             if (roles === 'user'){
-                const user = await blockUser(id, true)
+                const user = await blockUser(id, true);
                 if (user){
                     return res.status(200).json({ message: 'Вы успешно разблокированы', user })
                 }
@@ -191,11 +190,11 @@ class authController{
                 }
             }
             else if(roles === 'admin'){
-                const { user_id } = req.body 
-                const user = await blockUser(user_id, false)
+                const { user_id } = req.body;
+                const user = await blockUser(user_id, false);
 
                 if (user){
-                    const whoId = id === user_id ? 'себя' : `${id} ${user.fio}`
+                    const whoId = id === user_id ? 'себя' : `${id} ${user.fio}`;
                     return res.status(200).json({ message: `Вы успешно разблокировали ${whoId}`, user }) 
                 }
                 else{

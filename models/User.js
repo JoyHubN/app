@@ -48,8 +48,10 @@ export async function geUserForName(username){
 };
 
 
-export async function getUsers(){
+export async function getUsers(offset, limit=100){
   const users = await prisma.users.findMany({ 
+    skip: offset,
+    take: limit,
     include: {
       profiles: {
         select: {
@@ -61,7 +63,10 @@ export async function getUsers(){
     }
   });
   if (users){
-    return users
+    return {
+      users: users,
+      total: users.length
+    }
   }
   else{
     return users.code
@@ -105,7 +110,6 @@ export async function blockUser(user_id, status) {
         }
       }
     });
-    console.log(user)
     return userUpdate;
   }
 }
